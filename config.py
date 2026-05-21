@@ -11,5 +11,3 @@ supabase: Client = create_client(
     SUPABASE_URL,
     SUPABASE_KEY
 )
-print(SUPABASE_URL)
-print(SUPABASE_KEY[:20])
