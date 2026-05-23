@@ -32,3 +32,10 @@ def update_vendor(vendor_id, vendor_data):
 
 def delete_vendor(vendor_id):
     return vendor_repo.delete_vendor(vendor_id)
+
+def search_by_name(name):
+    return vendor_repo.search_vendor_by_name(name)
+
+def filter_vendors(city: str = None, state: str = None, category: str = None, min_price: float = None, max_price: float = None, rating: float = None, sort_by: str = None):
+    return vendor_repo.filter_vendors(city,state,category,min_price,max_price,rating,sort_by)
+

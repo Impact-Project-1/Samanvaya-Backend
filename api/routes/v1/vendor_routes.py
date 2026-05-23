@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from websockets import route
 from schemas.vendor_schema import VendorCreate
 from services import vendor_service
 from fastapi import HTTPException
@@ -80,3 +81,40 @@ def delete_vendor(vendor_id: str):
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+#SEARCHING AND FILTERING
+
+@router.get("/search/")
+def search_vendor_by_name(q: str):
+    try:
+        data = vendor_service.search_by_name(q)
+        
+        return {
+            "success": True,
+            "message": f"Vendors matching '{q}' retrieved successfully",
+            "data": data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    
+@router.get("/filter/")
+def filter_vendors(
+    city: str = None,
+    state: str = None,
+    category: str = None,
+    min_price: float = None,
+    max_price: float = None,
+    rating: float = None,
+    sort_by: str = None
+):
+    try:
+        data = vendor_service.filter_vendors(city, state, category, min_price, max_price, rating, sort_by)
+        return {
+            "success": True,
+            "message": "Vendors filtered successfully",
+            "data": data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
