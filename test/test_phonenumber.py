@@ -4,16 +4,19 @@ from unittest.mock import MagicMock, patch
 from core.normalise import normalise_phone_number
 from core.validate import validate_phone_number
 
-# Note: In a production setup, ensure your geolocator has a custom user_agent [5]
-# from your_module import validate_phone_number, normalise_phone_number
-
 
 # --- Mocking Setup ---
 @pytest.fixture
 def mock_geolocator():
-    """Mocks the geopy geolocator to avoid network calls [2, 3]."""
-    with patch("your_module.geolocator") as mocked_geolocator:
+    """Mock geopy so tests never make network calls."""
+    with patch("core.normalise.geolocator") as mocked_geolocator:
         yield mocked_geolocator
+
+
+def set_country(mock_geolocator, country_code):
+    mock_location = MagicMock()
+    mock_location.raw = {"address": {"country_code": country_code}}
+    mock_geolocator.geocode.return_value = mock_location
 
 
 # --- Tests for validate_phone_number ---
@@ -26,10 +29,14 @@ def mock_geolocator():
         "+91 9876543210",  # International with 2-digit code
         "+123 9876543210",  # International with 3-digit code
         "12345 67890",  # Split 5-5 format
+        "+977 9841234567",  # International with 3-digit Nepal code
+        "0000000000",  # Regex allows any 10 digits
+        "+44 0207946005",  # Regex allows leading zero in local part
+        "+91 98765 43210",  # Country code with split 5-5 local format
+        "+912 98765 43210",  # Three-digit country code with split local format
     ],
 )
 def test_validate_phone_number_success(phone):
-    """Tests that valid formats pass the regex [History]."""
     assert validate_phone_number(phone) == phone
 
 
@@ -40,10 +47,15 @@ def test_validate_phone_number_success(phone):
         "abcdefghij",  # Non-numeric
         "+9 9876543210",  # International code too short
         "987654321011",  # Too long
+        "98765-43210",  # Separators other than the single allowed space fail
+        " 9876543210",  # Leading whitespace is not accepted
+        "9876543210 ",  # Trailing whitespace is not accepted
+        "+1234 9876543210",  # Country code too long
+        "+91 987654321",  # Local number too short after country code
+        "9876 543210",  # Split format must be 5-5 digits
     ],
 )
 def test_validate_phone_number_failure(phone):
-    """Tests that invalid formats raise ValueError [History]."""
     with pytest.raises(
         ValueError, match="Phone number doesnt not follow standard format"
     ):
@@ -53,59 +65,68 @@ def test_validate_phone_number_failure(phone):
 # --- Tests for normalise_phone_number ---
 
 
-def test_normalise_phone_number_india_success(mock_geolocator):
-    """Tests normalisation for an Indian address [History]."""
-    # Mock geopy Location object and .raw dictionary [6-8]
-    mock_location = MagicMock()
-    mock_location.raw = {"address": {"country_code": "in"}}
-    mock_geolocator.geocode.return_value = mock_location
+@pytest.mark.parametrize(
+    ("phone", "country_code", "expected"),
+    [
+        ("9876543210", "in", "+919876543210"),
+        ("98765 43210", "in", "+919876543210"),
+        ("+91 9876543210", "in", "+919876543210"),
+        ("2025550123", "us", "+12025550123"),
+        ("02079460056", "gb", "+442079460056"),
+        ("0412345678", "au", "+61412345678"),
+    ],
+)
+def test_normalise_phone_number_success(mock_geolocator, phone, country_code, expected):
+    set_country(mock_geolocator, country_code)
 
-    result = normalise_phone_number("9876543210", "123 MG Road, Mumbai")
-    assert result == "+919876543210"  # E.164 format [History]
+    result = normalise_phone_number(phone, "region-specific address")
 
-
-def test_normalise_phone_number_us_success(mock_geolocator):
-    """Tests normalisation for a US address [History]."""
-    mock_location = MagicMock()
-    mock_location.raw = {"address": {"country_code": "us"}}
-    mock_geolocator.geocode.return_value = mock_location
-
-    # A 10-digit US number
-    result = normalise_phone_number(
-        "2025550123", "1600 Pennsylvania Avenue, Washington DC"
+    assert result == expected
+    mock_geolocator.geocode.assert_called_once_with(
+        "region-specific address", addressdetails=True
     )
-    assert result == "+12025550123"
 
 
 def test_normalise_phone_number_invalid_address(mock_geolocator):
-    """Tests fallback to 'IN' when geopy returns no results [6]."""
-    # Geocoders return None when no results are found [6]
     mock_geolocator.geocode.return_value = None
 
-    # Should fallback to 'IN' as per your code logic
     result = normalise_phone_number("9876543210", "Nonexistent Place")
+
     assert result == "+919876543210"
 
 
-def test_normalise_phone_number_invalid_for_region(mock_geolocator):
-    """Tests failure when number passes regex but is invalid for the region [History]."""
+def test_normalise_phone_number_missing_country_code_falls_back_to_india(
+    mock_geolocator,
+):
     mock_location = MagicMock()
-    mock_location.raw = {"address": {"country_code": "us"}}  # US Region
+    mock_location.raw = {"address": {}}
     mock_geolocator.geocode.return_value = mock_location
 
-    # This number passes your regex but is not a valid US number
+    result = normalise_phone_number("9876543210", "Address without country")
+
+    assert result == "+919876543210"
+
+
+@pytest.mark.parametrize(
+    ("phone", "country_code"),
+    [
+        ("9876543210", "us"),  # Valid-looking Indian number, invalid for US
+        ("12345", "in"),  # Too short for India
+        ("abcdefghij", "in"),  # Cannot be parsed as a phone number
+    ],
+)
+def test_normalise_phone_number_failure(mock_geolocator, phone, country_code):
+    set_country(mock_geolocator, country_code)
+
     with pytest.raises(ValueError, match="Failed to normalise number"):
-        normalise_phone_number("9876543210", "New York, USA")
+        normalise_phone_number(phone, "region-specific address")
 
 
 # --- Integration Test: Full Workflow ---
 
 
 def test_full_phone_workflow(mock_geolocator):
-    """Tests the combined flow: validate -> normalise [History]."""
-    mock_location = MagicMock()
-    mock_location.raw = {"address": {"country_code": "in"}}
-    mock_geolocator.geocode.return_value = mock_location
+    set_country(mock_geolocator, "in")
 
     raw_input = " 9876543210 "
     address = "Bangalore, India"

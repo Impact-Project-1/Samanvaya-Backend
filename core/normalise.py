@@ -30,15 +30,14 @@ def normalise_phone_number(phone_number: str, address: str) -> str:  # TODO
     """
 
     # extract the region code from address
-    location: dict = geolocator.geocode(address, addressdetails=True)
-    region: str = (
-        location.raw.get("address", {}).get("country_code", "in").upper() or "IN"
-    )
+    location = geolocator.geocode(address, addressdetails=True)
+    raw_address = getattr(location, "raw", {}).get("address", {}) if location else {}
+    region: str = raw_address.get("country_code", "in").upper() or "IN"
 
     # normalise the number
     try:
         parsed_number = phonenumbers.parse(phone_number, region)
-        if phonenumbers.is_valid_number(phone_number):
+        if phonenumbers.is_valid_number(parsed_number):
             normalised_number = phonenumbers.format_number(
                 parsed_number, phonenumbers.PhoneNumberFormat.E164
             )

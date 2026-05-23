@@ -1,0 +1,6 @@
+[pytest]
+minversion = "9.0"
+testpaths = ["test"]
+python_files = ["test_*.py", "*_test.py"]
+python_functions = ["test_*"]
+addopts = ["--strict-config", "--strict-markers", "-ra"]
