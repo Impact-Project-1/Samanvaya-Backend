@@ -89,7 +89,7 @@ def filter_vendors(city: str = None, state: str = None, category: str = None, mi
             supabase
             .table("categories")
             .select("category_id")
-            .eq("name", category)
+            .eq("slug", category)
             .execute()
         )
 
