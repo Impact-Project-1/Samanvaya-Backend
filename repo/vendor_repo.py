@@ -1,12 +1,12 @@
 from unicodedata import category
 
-from config import supabase
+from config import config
 
-
+client = config.supabase
 def create_vendor(data: dict):
 
     response = (
-        supabase
+        client
         .table("vendors")
         .insert(data)
         .execute()
@@ -18,7 +18,7 @@ def create_vendor(data: dict):
 def get_all_vendors():
 
     response = (
-        supabase
+        client
         .table("vendors")
         .select("*")
         .execute()
@@ -30,7 +30,7 @@ def get_all_vendors():
 def get_vendor_by_id(vendor_id: str):
 
     response = (
-        supabase
+        client
         .table("vendors")
         .select("*")
         .eq("vendor_id", vendor_id)
@@ -43,7 +43,7 @@ def get_vendor_by_id(vendor_id: str):
 def update_vendor(vendor_id: str, data: dict):
 
     response = (
-        supabase
+        client
         .table("vendors")
         .update(data)
         .eq("vendor_id", vendor_id)
@@ -56,7 +56,7 @@ def update_vendor(vendor_id: str, data: dict):
 def delete_vendor(vendor_id: str):
 
     response = (
-        supabase
+        client
         .table("vendors")
         .delete()
         .eq("vendor_id", vendor_id)
@@ -68,7 +68,8 @@ def delete_vendor(vendor_id: str):
 def search_vendor_by_name(name: str):
     
     response = (
-        supabase.table("vendors")
+        client
+        .table("vendors")
         .select("*")
         .ilike("business_name", f"%{name}%")
         .execute()
@@ -77,7 +78,7 @@ def search_vendor_by_name(name: str):
     return response.data
 
 def filter_vendors(city: str = None, state: str = None, category: str = None, min_price: float = None, max_price: float = None, rating: float = None, sort_by: str = None):
-    q = supabase.table("vendors").select("*")
+    q = client.table("vendors").select("*")
     
     if city:
         q = q.eq("city",city)
@@ -86,7 +87,7 @@ def filter_vendors(city: str = None, state: str = None, category: str = None, mi
     if category:
 
         category_response = (
-            supabase
+            client
             .table("categories")
             .select("category_id")
             .eq("slug", category)
@@ -98,7 +99,7 @@ def filter_vendors(city: str = None, state: str = None, category: str = None, mi
             category_id = category_response.data[0]["category_id"]
 
         vendor_response = (
-            supabase
+            client
             .table("vendor_categories")
             .select("vendor_id")
             .eq("category_id", category_id)
