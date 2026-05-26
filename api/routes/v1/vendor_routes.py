@@ -9,7 +9,7 @@ router = APIRouter(
     tags=["Vendors"]
 )
 
-
+#to create a new vendor profile
 @router.post("/")
 def create_vendor(vendor: VendorCreate) -> dict :
     try:
@@ -23,7 +23,7 @@ def create_vendor(vendor: VendorCreate) -> dict :
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-
+#to get all vendors
 @router.get("/")
 def get_vendors() -> dict:
 
@@ -37,7 +37,7 @@ def get_vendors() -> dict:
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e)) 
     
-
+#to get a single vendor by id
 @router.get("/{vendor_id}")
 def get_vendor(vendor_id: str) -> dict:
 
@@ -52,7 +52,7 @@ def get_vendor(vendor_id: str) -> dict:
         raise HTTPException(status_code=400, detail=str(e)) 
     
 
-
+#to update a vendor profile
 @router.put("/{vendor_id}")
 def update_vendor(vendor_id: str, vendor: VendorCreate) -> dict:
 
@@ -68,7 +68,7 @@ def update_vendor(vendor_id: str, vendor: VendorCreate) -> dict:
         raise HTTPException(status_code=400, detail=str(e))
     
 
-
+#to delete a vendor profile
 @router.delete("/{vendor_id}")
 def delete_vendor(vendor_id: str) -> dict:
 

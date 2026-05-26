@@ -6,7 +6,7 @@ def create_vendor(vendor_data: VendorCreate) -> dict:
 
     data = vendor_data.model_dump()
 
-    data["verified"] = False
+    data["verified"] = False #by default, all vendors are unverified. Later, display only verified vendors on the frontend and create an admin panel to verify vendors
     data["rating_avg"] = 0
     data["rating_count"] = 0
 
