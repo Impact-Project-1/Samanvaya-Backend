@@ -1,21 +1,21 @@
-from unicodedata import category
-
 from config import config
+from schemas.vendor_schema import VendorCreate
 
 client = config.supabase
-def create_vendor(data: dict):
+
+def create_vendor(vendor: VendorCreate) -> dict:
 
     response = (
         client
         .table("vendors")
-        .insert(data)
+        .insert(vendor)
         .execute()
     )
 
     return response.data
 
 
-def get_all_vendors():
+def get_all_vendors() -> list[dict]:
 
     response = (
         client
@@ -27,7 +27,7 @@ def get_all_vendors():
     return response.data
 
 
-def get_vendor_by_id(vendor_id: str):
+def get_vendor_by_id(vendor_id: str) -> list[dict]:
 
     response = (
         client
@@ -40,12 +40,12 @@ def get_vendor_by_id(vendor_id: str):
     return response.data
 
 
-def update_vendor(vendor_id: str, data: dict):
+def update_vendor(vendor_id: str, vendor: VendorCreate) -> dict:
 
     response = (
         client
         .table("vendors")
-        .update(data)
+        .update(vendor)
         .eq("vendor_id", vendor_id)
         .execute()
     )
@@ -53,7 +53,7 @@ def update_vendor(vendor_id: str, data: dict):
     return response.data
 
 
-def delete_vendor(vendor_id: str):
+def delete_vendor(vendor_id: str) -> dict:
 
     response = (
         client
@@ -65,7 +65,7 @@ def delete_vendor(vendor_id: str):
 
     return response.data
 
-def search_vendor_by_name(name: str):
+def search_vendor_by_name(name: str = None) -> list[dict]:
     
     response = (
         client
@@ -77,7 +77,7 @@ def search_vendor_by_name(name: str):
     
     return response.data
 
-def filter_vendors(city: str = None, state: str = None, category: str = None, min_price: float = None, max_price: float = None, rating: float = None, sort_by: str = None):
+def filter_vendors(city: str | None = None, state: str | None = None, category: str | None = None, min_price: float | None = None, max_price: float | None = None, rating: float | None = None, sort_by: str | None = None) -> list[dict]:
     q = client.table("vendors").select("*")
     
     if city:

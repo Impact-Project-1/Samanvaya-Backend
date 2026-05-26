@@ -11,7 +11,7 @@ router = APIRouter(
 
 
 @router.post("/")
-def create_vendor(vendor: VendorCreate):
+def create_vendor(vendor: VendorCreate) -> dict :
     try:
         data = vendor_service.create_vendor(vendor)
 
@@ -25,7 +25,7 @@ def create_vendor(vendor: VendorCreate):
 
 
 @router.get("/")
-def get_vendors():
+def get_vendors() -> dict:
 
     try:
         data = vendor_service.get_all_vendors()
@@ -39,7 +39,7 @@ def get_vendors():
     
 
 @router.get("/{vendor_id}")
-def get_vendor(vendor_id: str):
+def get_vendor(vendor_id: str) -> dict:
 
     try:
         data = vendor_service.get_vendor_by_id(vendor_id)
@@ -54,7 +54,7 @@ def get_vendor(vendor_id: str):
 
 
 @router.put("/{vendor_id}")
-def update_vendor(vendor_id: str, vendor: VendorCreate):
+def update_vendor(vendor_id: str, vendor: VendorCreate) -> dict:
 
     try:
         data = vendor_service.update_vendor(vendor_id, vendor)
@@ -70,7 +70,7 @@ def update_vendor(vendor_id: str, vendor: VendorCreate):
 
 
 @router.delete("/{vendor_id}")
-def delete_vendor(vendor_id: str):
+def delete_vendor(vendor_id: str) -> dict:
 
     try:
         vendor_service.delete_vendor(vendor_id)
@@ -85,7 +85,7 @@ def delete_vendor(vendor_id: str):
 #SEARCHING AND FILTERING
 
 @router.get("/search/")
-def search_vendor_by_name(q: str):
+def search_vendor_by_name(q: str) -> dict:
     try:
         data = vendor_service.search_by_name(q)
         
@@ -107,7 +107,7 @@ def filter_vendors(
     max_price: float = None,
     rating: float = None,
     sort_by: str = None
-):
+) -> dict:
     try:
         data = vendor_service.filter_vendors(city, state, category, min_price, max_price, rating, sort_by)
         return {
