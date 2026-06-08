@@ -1,16 +1,43 @@
-from pydantic import BaseModel
-from typing import Optional, List
+from typing import Annotated
+from pydantic import BaseModel, Field
 
 
 class VendorCreate(BaseModel):
-    vendor_id: str
-    business_name: str
-    about: str
-    city: str
-    state: str
-    phone: str
-    whatsapp: Optional[str] = None
-    website: Optional[str] = None
-    price_range_high: Optional[int] = None
-    price_range_low: Optional[int] = None
-    links: Optional[List[str]] = [] 
+
+    business_name: Annotated[
+        str,
+        Field(
+            min_length=3,
+            max_length=100,
+            description="Vendor business name"
+        )
+    ]
+
+    about: Annotated[
+        str,
+        Field(
+            min_length=10,
+            max_length=1000,
+            description="Vendor description"
+        )
+    ]
+
+    city: Annotated[
+        str,
+        Field(min_length=2, max_length=50)
+    ]
+
+    state: Annotated[
+        str,
+        Field(min_length=2, max_length=50)
+    ]
+    
+    phone: Annotated[
+        str,
+        Field(min_length=10, max_length=15)
+    ]
+    whatsapp: str | None = None
+    website: str | None = None
+    price_range_low: int | None = None
+    price_range_high: int | None = None
+    links: list[str] = Field(default_factory=list)
