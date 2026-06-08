@@ -132,7 +132,6 @@ Allows public access to vendor service categories.
 ---
 
 ## Public Category Viewing
-
 ```sql
 CREATE POLICY "Public can view categories"
 ON categories
