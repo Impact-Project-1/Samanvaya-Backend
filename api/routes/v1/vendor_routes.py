@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from websockets import route
+from core.auth import get_current_user
 from schemas.vendor_schema import VendorCreate
 from services import vendor_service
 from fastapi import HTTPException
@@ -11,9 +12,9 @@ router = APIRouter(
 
 #to create a new vendor profile
 @router.post("/")
-def create_vendor(vendor: VendorCreate) -> dict :
+def create_vendor(vendor: VendorCreate, current_user = Depends(get_current_user)) -> dict :
     try:
-        data = vendor_service.create_vendor(vendor)
+        data = vendor_service.create_vendor(vendor,current_user.id)
 
         return {
             "success": True,

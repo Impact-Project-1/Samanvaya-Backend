@@ -129,3 +129,20 @@ def filter_vendors(city: str | None = None, state: str | None = None, category: 
     
     response = q.execute()
     return response.data
+
+def create_vendor_category(
+    vendor_id: str,
+    category_id: int
+) -> dict:
+
+    response = (
+        client
+        .table("vendor_categories")
+        .insert({
+            "vendor_id": vendor_id,
+            "category_id": category_id
+        })
+        .execute()
+    )
+
+    return response.data
