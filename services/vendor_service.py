@@ -1,16 +1,31 @@
-from repo import vendor_repo
+from repo import category_repo, vendor_repo
 from schemas.vendor_schema import VendorCreate
 
 
-def create_vendor(vendor_data: VendorCreate) -> dict:
+def create_vendor(vendor_data: VendorCreate, user_id: str) -> dict:
 
     data = vendor_data.model_dump()
 
+    data["vendor_id"] = user_id
     data["verified"] = False #by default, all vendors are unverified. Later, display only verified vendors on the frontend and create an admin panel to verify vendors
     data["rating_avg"] = 0
     data["rating_count"] = 0
+    
+    
+    categories = data.pop("category_ids")
+    
+    vendor = vendor_repo.create_vendor(data)
+    
+    for id in categories:
 
-    return vendor_repo.create_vendor(data)
+        vendor_repo.create_vendor_category(
+            user_id,
+            id
+        )
+
+    return {
+        "message": "Vendor created successfully"
+    }
 
 
 def get_all_vendors() -> list[dict]:
