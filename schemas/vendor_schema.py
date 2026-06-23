@@ -21,6 +21,8 @@ class VendorCreate(BaseModel):
             description="Vendor description"
         )
     ]
+    
+    category_ids : list[int] = Field(default_factory=list)
 
     city: Annotated[
         str,
