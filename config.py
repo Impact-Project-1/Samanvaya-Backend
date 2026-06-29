@@ -3,6 +3,7 @@ Common configuration variables
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import AnyHttpUrl
 from supabase import create_client
 
 from supabase import Client
@@ -11,6 +12,8 @@ from supabase import Client
 class Config(BaseSettings):
     SUPABASE_URL: str
     SUPABASE_KEY: str
+
+    ALLOW_ORIGINS: list[AnyHttpUrl] = []
 
     model_config = SettingsConfigDict(env_file=".env.local")  # load the local env
 

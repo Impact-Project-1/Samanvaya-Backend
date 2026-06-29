@@ -15,17 +15,9 @@ class User(RestrictedBase):
         EmailStr, Field(..., description="email of the user")
     ]  # verify its not temp id
 
-    created_at: Annotated[
-        date,
-        Field(
-            default_factory=date.today,
-            description="date at which the corresponding record was created",
-        ),
+    phone: Annotated[
+        str,
+        Field(min_length=10, max_length=15)
     ]
-    updated_at: Annotated[
-        date,
-        Field(
-            default_factory=date.today,
-            description="date at which an update was meade on the record",
-        ),
-    ]
+
+    
