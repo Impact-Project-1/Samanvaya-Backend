@@ -1,27 +1,12 @@
-"""
-validator functions shall be handled here
+"""Pydantic validator support"""
 
-defined functions should only return the same un-normalised value
-or raise an exception in case of failure to validate, depending on the
-validation logic and context.
+def validate_phone_number(cls, v:str) -> str:
+        if not re.match(r"^\+[1-9]\d{1,14}$", v):
+            raise ValueError("Phone number format must be in valid E.164 format, eg: +1234567890")
+        # TODO: normalise
+        return v
 
-function definition guidelines:
-   - validation functions shall be prefixed with 'validate_'
-   - use snake cases for function name
-   - should mention the parameter type in the function header
-   - docstring for each validating function, describing what all the validation does
-   - return type shall be marked with ->
-   - validator functions that are either untested/undergoing testing and improvement shall be marked #TODO
-"""
-
-import re
-
-
-def validate_phone_number(phone_number: str) -> str:  # TODO
-    """
-    validate using basic constraints
-    """
-
-    if not re.fullmatch(r"^(?:\+\d{2,3}\s)?(?:\d{10}|\d{5} \d{5})$", phone_number):
-        raise ValueError("Phone number doesnt not follow standard format")
-    return phone_number
+def validate_password_strength(cls, v:str) -> str:
+        if not all([re.search(r"[A-Z]", v), re.search(r"[a-z]", v), re.search(r"[0-9]", v)]):
+            raise ValueError("Password must contain uppercase. lowercase and numeric characters")
+        return v

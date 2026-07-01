@@ -4,49 +4,59 @@
 
 The Samanvaya database is designed to support an event-services marketplace platform connecting customers with vendors such as photographers, decorators, caterers, and venues.
 
----
+# Logical Overview
+
+## Purpose
+
+Describes the purpose and relations and how they are related at the database level (may include ORM level).
+
+## Logic
+
+### Namespace: Auth
+The auth namespace contains predefined tables and views for handling authentication, which is an internal process
+only references shall be taken from it.
+
+### Namespace: Public
+Where the application logic and persistence lives, it holds the data of both the customers, vendors (and admins), 
+Each user can be 
 
 # Entity Relationship Overview
 
 ## Core Tables
 
-- users
 - vendors
 - categories
 - vendor_categories
 - vendor_images
 - reviews
 
----
-
-# 1. Users Table
+# 1. Customer Table
 
 ## Purpose
 
-Stores application users including customers and vendors.
+Stores customer data
 
 ## Table Name
 
 ```sql
-users
+customers
 ```
-
 ## Fields
 
 | Field | Type | Description |
 |---|---|---|
 | id | UUID | Primary key linked with `auth.users.id` |
-| name | TEXT | Full name of the user |
-| email | TEXT | User email address |
-| role | TEXT | User role (`customer` or `vendor`) |
+| display_name | TEXT | Full name of the user |
+| profile_pic | TEXT | Profile picture URL |
+| description | TEXT | Short description or bio |
+| contact | JSONB | Contact information (phone, email, etc.), key based storage and parsing mechanism |
+| identification | TEXT | Identification document (e.g., Aadhar, PAN) |
 | created_at | TIMESTAMP | Account creation timestamp |
 
 ## Relationships
 
-- One user can own one vendor profile
-- One user can write multiple reviews
-
----
+- Belongs to one user
+- Can write multiple reviews
 
 # 2. Vendors Table
 
@@ -87,8 +97,6 @@ vendors
 - Has many images
 - Belongs to many categories
 
----
-
 # 3. Categories Table
 
 ## Purpose
@@ -122,8 +130,6 @@ categories
 
 - Connected to vendors through `vendor_categories`
 
----
-
 # 4. Vendor Categories Table
 
 ## Purpose
@@ -148,8 +154,6 @@ vendor_categories
 - Many vendors can belong to many categories
 - Connects `vendors` and `categories`
 
----
-
 # 5. Vendor Images Table
 
 ## Purpose
@@ -172,8 +176,6 @@ vendor_images
 ## Relationships
 
 - One vendor can have multiple images
-
----
 
 # 6. Reviews Table
 
@@ -202,8 +204,6 @@ reviews
 - One vendor can have multiple reviews
 - One user can submit multiple reviews
 
----
-
 # Relationship Summary
 
 | Relationship | Type |
@@ -213,8 +213,6 @@ reviews
 | Vendor → Images | One-to-Many |
 | Vendor ↔ Categories | Many-to-Many |
 | User → Reviews | One-to-Many |
-
----
 
 # Constraints & Rules
 
@@ -232,5 +230,3 @@ reviews
 
 ## Vendor Categories
 - Prevent duplicate vendor-category mappings
-
----

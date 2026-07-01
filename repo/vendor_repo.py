@@ -146,3 +146,9 @@ def create_vendor_category(
     )
 
     return response.data
+
+def view_vendor_customers(
+    vendor_id: str,
+) -> list:
+    """return the list of customers of the vendor"""
+    
