@@ -49,11 +49,20 @@ Purpose: View past conversations and transaction history with vendors.
 Payload: None
 Reponse: List of chat identification (chat_ids)
 
+3. GET /me
+Purpose: View the customer's profile and past interactions
+Payload: None
+Response: JSON object with customer profile and past interactions with vendors(chats and transactions)
+
+4. UPDATE /me
+Purpose: Update customer profile
+Payload: Profile details schema
+Response: Acknowledgement with message and status code
+
 ## Transactions
 
 Purpose: Handle user transactions in the platform and deduct a fee for it to the platform.
 Prefix: /pay
-
 
 ## Vendor
 
