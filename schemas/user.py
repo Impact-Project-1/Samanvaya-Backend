@@ -1,10 +1,12 @@
-from pydantic import Annotated, Field, EmailStr, model_validator, AfterValidator
-from uuid import uuid4
-from typing import Self
-from datetime import date
-from schemas.base import RestrictedBase, Base
 import re
+
+from datetime import date
+from pydantic import Annotated, Field, EmailStr, model_validator, AfterValidator, ConfigDict
+from typing import Self
+from uuid import uuid4
+
 from core.validate import validate_password_strength, validate_phone_number
+from schemas.base import RestrictedBase, Base
 
 class User(RestrictedBase):
     """user's identity within the system is handled internally through ids of type uuid,
