@@ -19,6 +19,11 @@ class Config(BaseSettings):
     ALLOW_ORIGINS: list[AnyHttpUrl] = []
     
     # storage configurations
+    PROFILE_BUCKET: str = "profile_images"
+    VENDOR_BUCKET: str = "vendor_images"
+    SECURE_BUCKET: str = "secure_documents"
+    REVIEW_BUCKET: str = "review_images"
+
     PROFILE_IMAGE_SIZE: Annotated[int, Field(default=FILESIZE_5MB, description="Value is in bytes, and the default value is 5MB, \
         This is the profile image size attributed to user(vendor and customer)")]
     VENDOR_IMAGE_SIZE: Annotated[int, Field(default=FILESIZE_MEDIUM, description="Vendor uploaded images of the business, \

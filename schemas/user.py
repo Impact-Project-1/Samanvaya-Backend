@@ -59,3 +59,5 @@ class PasswordUpdate(Base):
         if self.password != self.cnf_password:
             raise ValueError("Passwords do not match")
         return self
+
+__all__ = ["User", "UserRegistration", "UserLogin", "PasswordUpdate"]
