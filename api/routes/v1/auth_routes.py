@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
+from core.exceptions import AppError
 from schemas.auth import RegisterRequest, LoginRequest, AuthResponse
 from services import auth_service
 
@@ -8,12 +9,12 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 def register(data: RegisterRequest):
     result = auth_service.register(data)
     if not result["success"]:
-        raise HTTPException(status_code=result["status_code"], detail=result["error_message"])
+        raise AppError(status_code=result["status_code"], msg=result["error_message"])
     return result
 
 @router.post("/login", response_model=AuthResponse)
 def login(data: LoginRequest):
     result = auth_service.login(data)
     if not result["success"]:
-        raise HTTPException(status_code=result["status_code"], detail=result["error_message"])
+        raise AppError(status_code=result["status_code"], msg=result["error_message"])
     return result

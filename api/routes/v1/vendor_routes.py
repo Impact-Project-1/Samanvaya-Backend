@@ -3,7 +3,7 @@ from websockets import route
 from core.auth import get_current_user
 from schemas.vendor_schema import VendorCreate
 from services import vendor_service
-from fastapi import HTTPException
+from core.exceptions import AppError
 
 router = APIRouter(
     prefix="/api/v1/vendors",
@@ -22,7 +22,7 @@ def create_vendor(vendor: VendorCreate, current_user = Depends(get_current_user)
             "data": data
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise AppError(status_code=400, msg=str(e))
 
 #to get all vendors
 @router.get("/")
@@ -36,7 +36,7 @@ def get_vendors() -> dict:
             "data": data
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e)) 
+        raise AppError(status_code=400, msg=str(e)) 
     
 #to get a single vendor by id
 @router.get("/{vendor_id}")
@@ -50,7 +50,7 @@ def get_vendor(vendor_id: str) -> dict:
             "data": data
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e)) 
+        raise AppError(status_code=400, msg=str(e)) 
     
 
 #to update a vendor profile
@@ -66,7 +66,7 @@ def update_vendor(vendor_id: str, vendor: VendorCreate) -> dict:
             "data": data
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise AppError(status_code=400, msg=str(e))
     
 
 #to delete a vendor profile
@@ -81,7 +81,7 @@ def delete_vendor(vendor_id: str) -> dict:
             "message": "Vendor deleted successfully"
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise AppError(status_code=400, msg=str(e))
     
 #SEARCHING AND FILTERING
 
@@ -96,7 +96,7 @@ def search_vendor_by_name(q: str) -> dict:
             "data": data
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise AppError(status_code=400, msg=str(e))
     
     
 @router.get("/filter/")
@@ -117,5 +117,5 @@ def filter_vendors(
             "data": data
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise AppError(status_code=400, msg=str(e))
     

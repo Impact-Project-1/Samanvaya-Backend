@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends
 from schemas.chat import ChatCreate
 from schemas.customer import CustomerUpdate
 from services import chat_service, customer_service

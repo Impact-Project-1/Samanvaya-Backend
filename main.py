@@ -26,6 +26,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi import Request
+from fastapi.responses import JSONResponse
+from core.exceptions import AppError
+
+@app.exception_handler(AppError)
+async def app_error_handler(request: Request, exc: AppError):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"message": exc.msg, "success": False},
+    )
+
 @app.get("/")
 def home():
     return {"message": "Samanvaya Backend Running"}

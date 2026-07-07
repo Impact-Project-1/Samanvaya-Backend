@@ -46,4 +46,4 @@ class AuthenticationError(AppError):
 
 
 # export
-__all__ = ["ExpiredTokenException", "InvalidSignatureException", "AuthenticationError"]
+__all__ = ["AppError", "ExpiredTokenException", "InvalidSignatureException", "AuthenticationError"]
